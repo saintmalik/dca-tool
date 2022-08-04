@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" crossorigin="anonymous">
+<link rel="stylesheet" type="text/css" href="https://code.jquery.com/ui/1.11.4/themes/ui-lightness/jquery-ui.css">
+<title>If You Had Invested</title>
+</head>
+<body>
+  <br/>    <br/>    <br/>
+  <form  class="px-4 py-3" method="POST" action="/config">
+    <div class="form-group">
+    <label for="fname" class="form-label">Coins</label>
+    <input type="text" value="ETH" class="form-control" id="coinid" name="coinid">
+  </div>
+  <div class="form-group">
+    <label for="fname" class="form-label">Total balance to spend on purchases</label>
+    <input type="text" value="1000" class="form-control" id="amount" name="amount">
+  </div>
+  <div class="form-group">
+    <label for="fname" class="form-label">The allotted percentages of the total balance to be used for purchases</label>
+    <input type="text" value="20" class="form-control" id="allottedpercent" name="allottedpercent">
+  </div>
+  <div class="form-group">
+    <label for="fname" class="form-label">Percentage value to account for Binance trading fees, e.g., 0.15</label>
+    <input type="text" value="0.15" class="form-control" id="feepercent" name="feepercent">
+  </div>
+  <div class="form-group">
+    <label for="fname" class="form-label">An indicator of whether to run the script in testing mode or not.</label>
+    <input type="text" value="false" class="form-control" id="testing" name="testing">
+  </div>
+  <div class="form-group">
+    <label for="fname" class="form-label">Buying Intervals, how many time should we run the order script</label>
+    <input type="text" value="4" class="form-control" id="buyingintervals" name="buyingintervals">
+  </div>
+    <button class="btn btn-primary">Save Config</button>
+  </form>
+  <br/>
+  <br/>
+    <br/>
+          </div>
+      </div><!-- /card-body -->
+    </div><!-- /card -->
+  </div>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+  <script src="https://code.jquery.com/ui/1.11.3/jquery-ui.js"></script>
+  <footer>
+    <br/>    <br/>    <br/>    <br/>
+    <p class="text-center">Built by <a href="https://twitter.com/saintmalik_" target="_blank">SaintMalik ❤️</a></p>
+  </footer>
+</body>
+</html>
