@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"log"
 	"strconv"
-	"time"
 
 	"github.com/adshao/go-binance/v2"
 	api_service "github.com/saintmalik/dca-tool/api_services"
@@ -37,7 +36,7 @@ func init() {
 }
 
 func perform() {
-	time.Sleep(time.Hour * 6)
+	// time.Sleep(time.Hour * 6)
 	model.Testvalue = viper.GetString("testing")
 	if model.Testvalue == "true" {
 		fmt.Println("Real orders cannot be made in testing mode")
