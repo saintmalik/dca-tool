@@ -16,8 +16,8 @@ import (
 // configCmd represents the config command
 var configCmd = &cobra.Command{
 	Use:   "config",
-	Short: "A brief description of your command",
-	Long:  `A longer description that spans multiple lines and likely contains examples.`,
+	Short: "This command allows you to set DCA Configurations",
+	Long:  `This command allows you to set your Binance API and Secret and other Configurations`,
 	Run: func(cmd *cobra.Command, args []string) {
 		setApi, _ := cmd.Flags().GetString("credapi")
 		if setApi == "reset" {
@@ -36,7 +36,7 @@ var tpl *template.Template
 
 func init() {
 	rootCmd.AddCommand(configCmd)
-	configCmd.PersistentFlags().String("credapi", "", "Set your credentials")
+	configCmd.PersistentFlags().String("credapi", "reset", "Set your Binance API and SecretKey credentials")
 	tpl = template.Must(template.ParseGlob("templates/*.html"))
 }
 
@@ -66,7 +66,7 @@ func creds(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println(l, "Your Binance API and Secret are set, dont let anyone access this file on your")
+	fmt.Println(l, "Your Binance API and Secret are set, dont let anyone access this file on your computer")
 	err = f.Close()
 	if err != nil {
 		fmt.Println(err)

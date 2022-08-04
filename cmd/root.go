@@ -12,12 +12,9 @@ import (
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "dca",
-	Short: "A brief description of your application",
-	Long: `A longer description that spans multiple lines and likely contains.`,
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
-	// Run: func(cmd *cobra.Command, args []string) { },
+	Use:   "dca-tool",
+	Short: "Dollar Cost Average Tool",
+	Long: `This Tool helps purchase the cryptocurrency you've set with your Binance account based on market percentage change.`,
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -30,6 +27,7 @@ func Execute() {
 }
 
 func init() {
+	rootCmd.CompletionOptions.DisableDefaultCmd = true
 }
 
 

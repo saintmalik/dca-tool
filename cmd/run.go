@@ -18,8 +18,8 @@ import (
 // runCmd represents the run command
 var runCmd = &cobra.Command{
 	Use:   "run",
-	Short: "A brief description of your command",
-	Long:  `A longer description that.`,
+	Short: "This command runs the program and execute orders",
+	Long:  `This command runs the program and checks the percentage change of the coin and then purchases the coin if the percentage change is less than the set percentage.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		perform()
 	},
