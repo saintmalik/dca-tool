@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"embed"
 	"fmt"
 	"log"
 	"net/http"
@@ -12,6 +13,8 @@ import (
 	"github.com/saintmalik/dca-tool/model"
 	"github.com/spf13/cobra"
 )
+//go:embed all:templates/*.html
+var tempFs embed.FS
 
 // configCmd represents the config command
 var configCmd = &cobra.Command{
@@ -25,21 +28,19 @@ var configCmd = &cobra.Command{
 			http.HandleFunc("/api", creds)
 			fmt.Println("Starting Server to set Binance API and Secret")
 			panic(http.ListenAndServe("localhost:4046", nil))
-			} else {
-			 	main()
+		} else {
+			main()
 		}
 	},
 }
 
-var tpl *template.Template
-
+// var tpl *template.Template
 
 func init() {
 	rootCmd.AddCommand(configCmd)
 	configCmd.PersistentFlags().String("credapi", "reset", "Set your Binance API and SecretKey credentials")
-	tpl = template.Must(template.ParseGlob("templates/*.html"))
+	// tpl = template.Must(template.ParseGlob("templates/*.html"))
 }
-
 
 func main() {
 	openbrowser("http://localhost:4046/")
@@ -48,8 +49,12 @@ func main() {
 	panic(http.ListenAndServe("localhost:4046", nil))
 }
 
-
 func creds(w http.ResponseWriter, r *http.Request) {
+	tmpl, err := template.ParseFS(tempFs, "templates/creds.html")
+	if err != nil {
+		log.Fatal("Error loading index template: ", err)
+	}
+
 	model.Bapi = r.FormValue("bapi")
 	model.Bsecret = r.FormValue("bsecret") //picking up the value from the form
 
@@ -73,33 +78,39 @@ func creds(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = tpl.ExecuteTemplate(w, "creds.html", nil)
-	if err != nil {
-		fmt.Println(err)
-	}
+	tmpl.Execute(w, nil)
+
+	// err = tpl.ExecuteTemplate(w, "creds.html", nil)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// }
 
 }
 
 func form(w http.ResponseWriter, r *http.Request) {
-		model.Coinid = r.FormValue("coinid")
-		model.Amount = r.FormValue("amount")
-		model.Alloted = r.FormValue("allottedpercent")
-		model.Buyinterval = r.FormValue("buyingintervals")
-		model.Fee = r.FormValue("feepercent")
-		model.Testvalue = r.FormValue("testing") //picking up the value from the form
+	tmpl, err := template.ParseFS(tempFs, "templates/index.html")
+	if err != nil {
+		log.Fatal("Error loading index template: ", err)
+	}
+	model.Coinid = r.FormValue("coinid")
+	model.Amount = r.FormValue("amount")
+	model.Alloted = r.FormValue("allottedpercent")
+	model.Buyinterval = r.FormValue("buyingintervals")
+	model.Fee = r.FormValue("feepercent")
+	model.Testvalue = r.FormValue("testing") //picking up the value from the form
 
-		f, err := os.Create("config.json")
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
+	f, err := os.Create("config.json")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 
-		l, err := f.WriteString(`{"coins":"` + model.Coinid + `","amount":"` + model.Amount + `","percent":"` + model.Alloted + `","fee":"` + model.Fee + `","testing":"` + model.Testvalue + `","buyintervals":"` + model.Buyinterval + `"}`)
-		if err != nil {
-			fmt.Println("Your Binance API and Secret are set, dont let anyone access this file on you", err)
-			f.Close()
-			return
-		}
+	l, err := f.WriteString(`{"coins":"` + model.Coinid + `","amount":"` + model.Amount + `","percent":"` + model.Alloted + `","fee":"` + model.Fee + `","testing":"` + model.Testvalue + `","buyintervals":"` + model.Buyinterval + `"}`)
+	if err != nil {
+		fmt.Println("Your Binance API and Secret are set, dont let anyone access this file on you", err)
+		f.Close()
+		return
+	}
 
 	fmt.Println(l, "Your DCA Configurations are set, quit the server and and run dca run")
 	err = f.Close()
@@ -108,10 +119,12 @@ func form(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = tpl.ExecuteTemplate(w, "index.html", nil)
-	if err != nil {
-		fmt.Println(err)
-	}
+	tmpl.Execute(w, nil)
+
+	// err = tpl.ExecuteTemplate(w, "index.html", nil)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// }
 
 }
 
