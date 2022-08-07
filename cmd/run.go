@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"context"
+	_ "embed"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -13,6 +14,12 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
+
+//go:embed all:vipercon.yaml
+var configjsonFs  string
+
+//go:embed all:viper.yaml
+var configyamlFs string
 
 // runCmd represents the run command
 var runCmd = &cobra.Command{
@@ -26,13 +33,14 @@ var runCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(runCmd)
-	viper.SetConfigName("config") // name of config file (without extension)
+	viper.SetConfigName(configjsonFs) // name of config file (without extension)
 	viper.SetConfigType("json")   // REQUIRED if the config file does not have the extension in the name
-	viper.AddConfigPath("cmd" )      // optionally look for config in the working directory
+	viper.AddConfigPath("cmd")    // optionally look for config in the working directory
 	err := viper.ReadInConfig()   // Find and read the config file
 	if err != nil {               // Handle errors reading the config file
 		panic(fmt.Errorf("fatal error config file: %w", err))
 	}
+	fmt.Println("Config file successfully read", viper.ConfigFileUsed())
 }
 
 func perform() {
@@ -97,7 +105,7 @@ func dcaBuy() {
 
 	fmt.Println("Price per buy:", model.Priceperbuy)
 
-	viper.SetConfigFile("./config.yaml")
+	viper.SetConfigFile(configyamlFs)
 	viper.ReadInConfig()
 
 	client := binance.NewClient(viper.GetString("api"), viper.GetString("secretkey"))

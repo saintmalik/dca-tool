@@ -18,18 +18,12 @@ import (
 //go:embed all:templates/*
 var TempFs embed.FS
 
-//go:embed all:config.yaml
-var b string
-
-//go:embed all:config.json
-var c string
-
-var configYaml = b
-var configJSON = c
-
 const (
+	configYaml = "config.yaml"
+	configJSON = "config.json"
 	foldername = "cmd"
 )
+
 
 // configCmd represents the config command
 var configCmd = &cobra.Command{
@@ -43,8 +37,8 @@ var configCmd = &cobra.Command{
 			http.HandleFunc("/api", creds)
 			fmt.Println("Starting Server to set Binance API and Secret")
 			panic(http.ListenAndServe("localhost:4046", nil))
-			} else {
-			 	main()
+		} else {
+			main()
 		}
 	},
 }
@@ -87,7 +81,6 @@ func creds(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(err)
 		return
 	}
-
 	err = tmpl.ExecuteTemplate(w, "creds.html", nil)
 	if err != nil {
 		log.Fatal("Error loading index template: ", err)
@@ -121,7 +114,7 @@ func form(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(err)
 		return
 	}
-	err = tmpl.ExecuteTemplate(w, "creds.html", nil)
+	err = tmpl.ExecuteTemplate(w, "index.html", nil)
 	if err != nil {
 		log.Fatal("Error loading index template: ", err)
 	}
