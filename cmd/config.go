@@ -7,14 +7,25 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"runtime"
 	"text/template"
 
 	"github.com/saintmalik/dca-tool/model"
 	"github.com/spf13/cobra"
 )
-//go:embed all:templates/*.html
-var tempFs embed.FS
+
+//go:embed all:templates/*
+var TempFs embed.FS
+
+// //go:embed all:config.yaml
+// var b string
+
+const (
+	configYaml = "config.yaml"
+	configJSON = "config.json"
+	foldername = "cmd"
+)
 
 // configCmd represents the config command
 var configCmd = &cobra.Command{
@@ -22,6 +33,7 @@ var configCmd = &cobra.Command{
 	Short: "This command allows you to set DCA Configurations",
 	Long:  `This command allows you to set your Binance API and Secret and other Configurations`,
 	Run: func(cmd *cobra.Command, args []string) {
+
 		setApi, _ := cmd.Flags().GetString("credapi")
 		if setApi == "reset" {
 			openbrowser("http://localhost:4046/api")
@@ -34,12 +46,9 @@ var configCmd = &cobra.Command{
 	},
 }
 
-// var tpl *template.Template
-
 func init() {
 	rootCmd.AddCommand(configCmd)
 	configCmd.PersistentFlags().String("credapi", "reset", "Set your Binance API and SecretKey credentials")
-	// tpl = template.Must(template.ParseGlob("templates/*.html"))
 }
 
 func main() {
@@ -50,7 +59,7 @@ func main() {
 }
 
 func creds(w http.ResponseWriter, r *http.Request) {
-	tmpl, err := template.ParseFS(tempFs, "templates/creds.html")
+	tmpl, err := template.ParseFS(TempFs, "templates/creds.html")
 	if err != nil {
 		log.Fatal("Error loading index template: ", err)
 	}
@@ -58,7 +67,7 @@ func creds(w http.ResponseWriter, r *http.Request) {
 	model.Bapi = r.FormValue("bapi")
 	model.Bsecret = r.FormValue("bsecret") //picking up the value from the form
 
-	f, err := os.Create("config.yaml")
+	f, err := os.Create(filepath.Join(foldername, configYaml))
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -79,19 +88,14 @@ func creds(w http.ResponseWriter, r *http.Request) {
 	}
 
 	tmpl.Execute(w, nil)
-
-	// err = tpl.ExecuteTemplate(w, "creds.html", nil)
-	// if err != nil {
-	// 	fmt.Println(err)
-	// }
-
 }
 
 func form(w http.ResponseWriter, r *http.Request) {
-	tmpl, err := template.ParseFS(tempFs, "templates/index.html")
+	tmpl, err := template.ParseFS(TempFs, "templates/index.html")
 	if err != nil {
 		log.Fatal("Error loading index template: ", err)
 	}
+
 	model.Coinid = r.FormValue("coinid")
 	model.Amount = r.FormValue("amount")
 	model.Alloted = r.FormValue("allottedpercent")
@@ -99,7 +103,7 @@ func form(w http.ResponseWriter, r *http.Request) {
 	model.Fee = r.FormValue("feepercent")
 	model.Testvalue = r.FormValue("testing") //picking up the value from the form
 
-	f, err := os.Create("config.json")
+	f, err := os.Create(filepath.Join(foldername, configJSON))
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -118,14 +122,7 @@ func form(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(err)
 		return
 	}
-
 	tmpl.Execute(w, nil)
-
-	// err = tpl.ExecuteTemplate(w, "index.html", nil)
-	// if err != nil {
-	// 	fmt.Println(err)
-	// }
-
 }
 
 func openbrowser(url string) {

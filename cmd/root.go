@@ -14,7 +14,7 @@ import (
 var rootCmd = &cobra.Command{
 	Use:   "dca-tool",
 	Short: "Dollar Cost Average Tool",
-	Long: `This Tool helps purchase the cryptocurrency you've set with your Binance account based on market percentage change.`,
+	Long:  `This Tool helps purchase the cryptocurrency you've set with your Binance account based on market percentage change.`,
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -29,5 +29,3 @@ func Execute() {
 func init() {
 	rootCmd.CompletionOptions.DisableDefaultCmd = true
 }
-
-
