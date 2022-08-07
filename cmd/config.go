@@ -18,12 +18,16 @@ import (
 //go:embed all:templates/*
 var TempFs embed.FS
 
-// //go:embed all:config.yaml
-// var b string
+//go:embed all:config.yaml
+var b string
+
+//go:embed all:config.json
+var c string
+
+var configYaml = b
+var configJSON = c
 
 const (
-	configYaml = "config.yaml"
-	configJSON = "config.json"
 	foldername = "cmd"
 )
 
@@ -33,22 +37,24 @@ var configCmd = &cobra.Command{
 	Short: "This command allows you to set DCA Configurations",
 	Long:  `This command allows you to set your Binance API and Secret and other Configurations`,
 	Run: func(cmd *cobra.Command, args []string) {
-
 		setApi, _ := cmd.Flags().GetString("credapi")
 		if setApi == "reset" {
 			openbrowser("http://localhost:4046/api")
 			http.HandleFunc("/api", creds)
 			fmt.Println("Starting Server to set Binance API and Secret")
 			panic(http.ListenAndServe("localhost:4046", nil))
-		} else {
-			main()
+			} else {
+			 	main()
 		}
 	},
 }
 
+var tmpl *template.Template
+
 func init() {
 	rootCmd.AddCommand(configCmd)
 	configCmd.PersistentFlags().String("credapi", "reset", "Set your Binance API and SecretKey credentials")
+	tmpl = template.Must(template.ParseFS(TempFs, "templates/*.html"))
 }
 
 func main() {
@@ -59,11 +65,6 @@ func main() {
 }
 
 func creds(w http.ResponseWriter, r *http.Request) {
-	tmpl, err := template.ParseFS(TempFs, "templates/creds.html")
-	if err != nil {
-		log.Fatal("Error loading index template: ", err)
-	}
-
 	model.Bapi = r.FormValue("bapi")
 	model.Bsecret = r.FormValue("bsecret") //picking up the value from the form
 
@@ -87,15 +88,13 @@ func creds(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tmpl.Execute(w, nil)
-}
-
-func form(w http.ResponseWriter, r *http.Request) {
-	tmpl, err := template.ParseFS(TempFs, "templates/index.html")
+	err = tmpl.ExecuteTemplate(w, "creds.html", nil)
 	if err != nil {
 		log.Fatal("Error loading index template: ", err)
 	}
+}
 
+func form(w http.ResponseWriter, r *http.Request) {
 	model.Coinid = r.FormValue("coinid")
 	model.Amount = r.FormValue("amount")
 	model.Alloted = r.FormValue("allottedpercent")
@@ -122,7 +121,10 @@ func form(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(err)
 		return
 	}
-	tmpl.Execute(w, nil)
+	err = tmpl.ExecuteTemplate(w, "creds.html", nil)
+	if err != nil {
+		log.Fatal("Error loading index template: ", err)
+	}
 }
 
 func openbrowser(url string) {
