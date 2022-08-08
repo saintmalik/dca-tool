@@ -1,19 +1,19 @@
 package model
 
 var (
-	Alloted string
-	Coinid string
-	Amount string
-	Buyinterval string
-	Fee string
-	Bapi     string
-	Bsecret  string
-	Testvalue string
-	Priceperbuy string
-	Config_allocated float64
-	Config_amount float64
+	Alloted             string
+	Coinid              string
+	Amount              string
+	Buyinterval         string
+	Fee                 string
+	Bapi                string
+	Bsecret             string
+	Testvalue           string
+	Priceperbuy         string
+	Config_allocated    float64
+	Config_amount       float64
 	Config_buyintervals int
-	Config_fee float64
+	Config_fee          float64
 )
 
 type Config struct {

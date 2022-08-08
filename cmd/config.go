@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
-	"path/filepath"
 	"runtime"
 	"text/template"
 
@@ -18,51 +17,51 @@ import (
 //go:embed all:templates/*
 var TempFs embed.FS
 
-const (
-	configYaml = "config.yaml"
-	configJSON = "config.json"
-	foldername = "cmd"
-)
+var tmpl *template.Template
 
-
-// configCmd represents the config command
 var configCmd = &cobra.Command{
 	Use:   "config",
 	Short: "This command allows you to set DCA Configurations",
 	Long:  `This command allows you to set your Binance API and Secret and other Configurations`,
 	Run: func(cmd *cobra.Command, args []string) {
-		setApi, _ := cmd.Flags().GetString("credapi")
-		if setApi == "reset" {
-			openbrowser("http://localhost:4046/api")
-			http.HandleFunc("/api", creds)
-			fmt.Println("Starting Server to set Binance API and Secret")
-			panic(http.ListenAndServe("localhost:4046", nil))
-		} else {
-			main()
+		setCreds, _ := cmd.Flags().GetString("set")
+		fmt.Println(setCreds)
+		switch {
+		case setCreds == "dcainfo":
+           dcaConfigRun()
+		case setCreds == "secret":
+	       dcaCredsRun()
+		default:
+			fmt.Println("You have entered an invalid command")
 		}
 	},
 }
 
-var tmpl *template.Template
-
 func init() {
 	rootCmd.AddCommand(configCmd)
-	configCmd.PersistentFlags().String("credapi", "reset", "Set your Binance API and SecretKey credentials")
+	configCmd.PersistentFlags().String("set", "", "Set your Binance Configurations")
 	tmpl = template.Must(template.ParseFS(TempFs, "templates/*.html"))
 }
 
-func main() {
+func dcaConfigRun() {
 	openbrowser("http://localhost:4046/")
-	http.HandleFunc("/", form)
+	http.HandleFunc("/", dcaConfig)
 	fmt.Println("Starting Server to set Configurations")
 	panic(http.ListenAndServe("localhost:4046", nil))
 }
 
-func creds(w http.ResponseWriter, r *http.Request) {
+func dcaCredsRun () {
+		openbrowser("http://localhost:4046/api")
+		http.HandleFunc("/api", dcaCreds)
+		fmt.Println("Starting Server to set Binance API and Secret")
+		panic(http.ListenAndServe("localhost:4046", nil))
+}
+
+func dcaCreds(w http.ResponseWriter, r *http.Request) {
 	model.Bapi = r.FormValue("bapi")
 	model.Bsecret = r.FormValue("bsecret") //picking up the value from the form
 
-	f, err := os.Create(filepath.Join(foldername, configYaml))
+	f, err := os.Create("config.yaml")
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -87,7 +86,7 @@ func creds(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func form(w http.ResponseWriter, r *http.Request) {
+func dcaConfig(w http.ResponseWriter, r *http.Request) {
 	model.Coinid = r.FormValue("coinid")
 	model.Amount = r.FormValue("amount")
 	model.Alloted = r.FormValue("allottedpercent")
@@ -95,7 +94,7 @@ func form(w http.ResponseWriter, r *http.Request) {
 	model.Fee = r.FormValue("feepercent")
 	model.Testvalue = r.FormValue("testing") //picking up the value from the form
 
-	f, err := os.Create(filepath.Join(foldername, configJSON))
+	f, err := os.Create("config.json")
 	if err != nil {
 		fmt.Println(err)
 		return
